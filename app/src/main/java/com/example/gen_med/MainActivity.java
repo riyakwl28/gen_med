@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 import android.hardware.Camera;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.SurfaceHolder;
@@ -56,31 +57,50 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         public void onPictureTaken(byte[] imageData, Camera c) {
 
             Bitmap bitmap = BitmapFactory.decodeByteArray(imageData , 0, imageData .length);
-            String file_path=saveToInternalSorage(bitmap);
-            Toast.makeText(getApplicationContext(),"Image stored succesfully at "+file_path,Toast.LENGTH_LONG).show();
+            saveToSD(bitmap);
+            Toast.makeText(getApplicationContext(),"Image stored succesfully ",Toast.LENGTH_LONG).show();
         }
     };
 
-    private String saveToInternalSorage(Bitmap bitmapImage){
-        ContextWrapper cw = new ContextWrapper(getApplicationContext());
-        // path to /data/data/yourapp/app_data/imageDir
-        File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
-        // Create imageDir
-        File mypath=new File(directory,"marina1.jpg");
+    public void saveToSD(Bitmap outputImage){
 
-        FileOutputStream fos = null;
+
+        File storagePath = new File(Environment.getExternalStorageDirectory() + "/MyPhotos/");
+        storagePath.mkdirs();
+
+        File myImage = new File(storagePath, Long.toString(System.currentTimeMillis()) + ".jpg");
+
         try {
-
-            fos = new FileOutputStream(mypath);
-
-            // Use the compress method on the BitMap object to write image to the OutputStream
-            bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, fos);
-            fos.close();
+            FileOutputStream out = new FileOutputStream(myImage);
+            outputImage.compress(Bitmap.CompressFormat.JPEG, 80, out);
+            out.flush();
+            out.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return directory.getAbsolutePath();
     }
+
+
+//    private String saveToInternalSorage(Bitmap bitmapImage){
+//        ContextWrapper cw = new ContextWrapper(getApplicationContext());
+//        // path to /data/data/yourapp/app_data/imageDir
+//        File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
+//        // Create imageDir
+//        File mypath=new File(directory,"marina1.jpg");
+//
+//        FileOutputStream fos = null;
+//        try {
+//
+//            fos = new FileOutputStream(mypath);
+//
+//            // Use the compress method on the BitMap object to write image to the OutputStream
+//            bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, fos);
+//            fos.close();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return directory.getAbsolutePath();
+//    }
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         mCamera=Camera.open();
