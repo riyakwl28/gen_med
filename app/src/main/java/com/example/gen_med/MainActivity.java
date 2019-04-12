@@ -18,6 +18,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+import android.support.annotation.NonNull;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+
+
+import com.google.firebase.ml.vision.FirebaseVision;
+import com.google.firebase.ml.vision.common.FirebaseVisionImage;
+import com.google.firebase.ml.vision.text.FirebaseVisionText;
+import com.google.firebase.ml.vision.text.FirebaseVisionTextRecognizer;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -29,7 +38,7 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 
 public class MainActivity extends AppCompatActivity implements SurfaceHolder.Callback {
-
+     Bitmap bitmap;
     EditText editText;
     Button proceed;
     SurfaceView mSurfaceView;
@@ -58,6 +67,12 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
             public void onClick(View v) {
                 //take picture here
                 mCamera.takePicture(null, null, mPictureCallback);
+
+                /*Intent i=new Intent(MainActivity.this,editTextActivity.class);
+                i.putExtra("Medicine Name",medName);
+                startActivity(i);*/
+                editText.setText(medName);
+
             }
         });
 
@@ -84,6 +99,19 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         public void onPictureTaken(byte[] imageData, Camera c) {
 
             Bitmap bitmap = BitmapFactory.decodeByteArray(imageData , 0, imageData .length);
+            FirebaseVisionImage image = FirebaseVisionImage.fromBitmap(bitmap);
+            FirebaseVisionTextRecognizer detector = FirebaseVision.getInstance().getOnDeviceTextRecognizer();
+            detector.processImage(image).addOnSuccessListener(new OnSuccessListener<FirebaseVisionText>() {
+                @Override
+                public void onSuccess(FirebaseVisionText firebaseVisionText) {
+                    processTxt(firebaseVisionText);
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+
+                }
+            });
             String partFilename = currentDateFormat();
             //String file_path=storeCameraPhotoInSDCard(bitmap,partFilename);
             storeCameraPhotoInSDCard(bitmap,partFilename);
@@ -125,6 +153,32 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         }
         return directory.getAbsolutePath();
     }*/
+    /*private void detectTxt() {
+        FirebaseVisionImage image = FirebaseVisionImage.fromBitmap(bitmap);
+        FirebaseVisionTextRecognizer detector = FirebaseVision.getInstance().getOnDeviceTextRecognizer();
+        detector.processImage(image).addOnSuccessListener(new OnSuccessListener<FirebaseVisionText>() {
+            @Override
+            public void onSuccess(FirebaseVisionText firebaseVisionText) {
+                processTxt(firebaseVisionText);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+            }
+        });
+    }*/
+    private void processTxt(FirebaseVisionText text) {
+        List<FirebaseVisionText.TextBlock> blocks = text.getTextBlocks();
+        if (blocks.size() == 0) {
+            Toast.makeText(MainActivity.this, "No Text :(", Toast.LENGTH_LONG).show();
+            return;
+        }
+        for (FirebaseVisionText.TextBlock block : text.getTextBlocks()) {
+            medName = block.getText();
+
+        }
+    }
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         mCamera=Camera.open();
