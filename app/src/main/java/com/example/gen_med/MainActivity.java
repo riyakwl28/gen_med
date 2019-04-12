@@ -18,6 +18,7 @@ import android.widget.Toast;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements SurfaceHolder.Callback {
 
@@ -93,8 +94,11 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         if (mPreviewRunning) {
             mCamera.stopPreview();
         }
-        Camera.Parameters p = mCamera.getParameters();
-        p.setPreviewSize(w, h);
+
+        Camera.Parameters p =mCamera.getParameters();
+        List<Camera.Size> previewSizes = p.getSupportedPreviewSizes();
+        Camera.Size previewSize = previewSizes.get(0);
+        p.setPreviewSize(previewSize.width, previewSize.height);
         mCamera.setParameters(p);
         try {
             mCamera.setPreviewDisplay(holder);
