@@ -2,6 +2,7 @@ package com.example.gen_med;
 
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
@@ -30,12 +31,14 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     Camera mCamera;
     boolean mPreviewRunning;
     Button btncapture;
+    String medName="";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         editText=(EditText) findViewById(R.id.editText1) ;
         proceed=(Button)findViewById(R.id.button) ;
+
 
         btncapture=(Button) findViewById(R.id.btncapture);
         mSurfaceView = (SurfaceView) findViewById(R.id.surface_camera);
@@ -49,6 +52,19 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
             public void onClick(View v) {
                 //take picture here
                 mCamera.takePicture(null, null, mPictureCallback);
+            }
+        });
+
+        proceed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                medName=editText.getText().toString();
+
+                Intent i=new Intent(MainActivity.this,editTextActivity.class);
+                i.putExtra("Medicine Name",medName);
+                startActivity(i);
+
+
             }
         });
     }
