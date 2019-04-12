@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
             public void onClick(View v) {
                 medName=editText.getText().toString();
 
-                Intent i=new Intent(MainActivity.this,editTextActivity.class);
+                Intent i=new Intent(MainActivity.this,genericmedActivity.class);
                 i.putExtra("Medicine Name",medName);
                 startActivity(i);
 

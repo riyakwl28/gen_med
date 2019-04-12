@@ -1,14 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="fill_parent"
+android:layout_height="wrap_content"
+android:orientation="vertical"
+android:padding="20dp">
 
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/textView"
-    android:layout_width="wrap_content"
+<TextView
+    android:id="@+id/name"
+    android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:text="Medium Text"
-    android:textStyle="bold"
-    android:textAppearance="?android:attr/textAppearanceMedium"
-    android:layout_marginLeft="10dp"
-    android:layout_marginTop="5dp"
-    android:padding="2dp"
-    android:textColor="#4d4d4d"
-    />
+    android:paddingBottom="2dip"
+    android:paddingTop="6dip"
+    android:text="Medicine Name"
+    android:textColor="@color/colorPrimaryDark"
+    android:textSize="16sp"
+    android:textStyle="bold" />
+
+<TextView
+    android:id="@+id/email"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="2dip"
+    android:text="Price"
+    android:textColor="#958A8A" />
+
+</LinearLayout>
+
