@@ -5,6 +5,8 @@ import android.content.ContextWrapper;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import android.hardware.Camera;
 import android.os.Environment;
@@ -18,9 +20,13 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
+import static android.Manifest.permission.CAMERA;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+
 
 public class MainActivity extends AppCompatActivity implements SurfaceHolder.Callback {
 
@@ -68,55 +74,57 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
             }
         });
     }
+    private String currentDateFormat(){
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HH_mm_ss");
+        String  currentTimeStamp = dateFormat.format(new Date());
+        return currentTimeStamp;
+    }
 
     Camera.PictureCallback mPictureCallback = new Camera.PictureCallback() {
         public void onPictureTaken(byte[] imageData, Camera c) {
 
             Bitmap bitmap = BitmapFactory.decodeByteArray(imageData , 0, imageData .length);
-            saveToSD(bitmap);
-            Toast.makeText(getApplicationContext(),"Image stored succesfully ",Toast.LENGTH_LONG).show();
+            String partFilename = currentDateFormat();
+            //String file_path=storeCameraPhotoInSDCard(bitmap,partFilename);
+            storeCameraPhotoInSDCard(bitmap,partFilename);
+            Toast.makeText(getApplicationContext(),"Image stored succesfully at "+partFilename,Toast.LENGTH_LONG).show();
         }
     };
+    private void storeCameraPhotoInSDCard(Bitmap bitmap, String currentDate){
 
-    public void saveToSD(Bitmap outputImage){
-
-
-        File storagePath = new File(Environment.getExternalStorageDirectory() + "/MyPhotos/");
-        storagePath.mkdirs();
-
-        File myImage = new File(storagePath, Long.toString(System.currentTimeMillis()) + ".jpg");
-
+        File outputFile = new File(Environment.getExternalStorageDirectory(), "photo_" + currentDate + ".jpg");
         try {
-            FileOutputStream out = new FileOutputStream(myImage);
-            outputImage.compress(Bitmap.CompressFormat.JPEG, 80, out);
-            out.flush();
-            out.close();
-        } catch (Exception e) {
+            FileOutputStream fileOutputStream = new FileOutputStream(outputFile);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
+            fileOutputStream.flush();
+            fileOutputStream.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    /*private String saveToInternalSorage(Bitmap bitmapImage){
+        ContextWrapper cw = new ContextWrapper(getApplicationContext());
+        // path to /data/data/yourapp/app_data/imageDir
+        File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
+        // Create imageDir
+        File mypath=new File(directory,"marina1.jpg");
 
-//    private String saveToInternalSorage(Bitmap bitmapImage){
-//        ContextWrapper cw = new ContextWrapper(getApplicationContext());
-//        // path to /data/data/yourapp/app_data/imageDir
-//        File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
-//        // Create imageDir
-//        File mypath=new File(directory,"marina1.jpg");
-//
-//        FileOutputStream fos = null;
-//        try {
-//
-//            fos = new FileOutputStream(mypath);
-//
-//            // Use the compress method on the BitMap object to write image to the OutputStream
-//            bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, fos);
-//            fos.close();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return directory.getAbsolutePath();
-//    }
+        FileOutputStream fos = null;
+        try {
+
+            fos = new FileOutputStream(mypath);
+
+            // Use the compress method on the BitMap object to write image to the OutputStream
+            bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, fos);
+            fos.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return directory.getAbsolutePath();
+    }*/
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         mCamera=Camera.open();
