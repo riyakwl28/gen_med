@@ -4,8 +4,11 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import android.hardware.Camera;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.SurfaceHolder;
@@ -16,9 +19,13 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
+import static android.Manifest.permission.CAMERA;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+
 
 public class MainActivity extends AppCompatActivity implements SurfaceHolder.Callback {
 
@@ -51,17 +58,38 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
             }
         });
     }
+    private String currentDateFormat(){
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HH_mm_ss");
+        String  currentTimeStamp = dateFormat.format(new Date());
+        return currentTimeStamp;
+    }
 
     Camera.PictureCallback mPictureCallback = new Camera.PictureCallback() {
         public void onPictureTaken(byte[] imageData, Camera c) {
 
             Bitmap bitmap = BitmapFactory.decodeByteArray(imageData , 0, imageData .length);
-            String file_path=saveToInternalSorage(bitmap);
-            Toast.makeText(getApplicationContext(),"Image stored succesfully at "+file_path,Toast.LENGTH_LONG).show();
+            String partFilename = currentDateFormat();
+            //String file_path=storeCameraPhotoInSDCard(bitmap,partFilename);
+            storeCameraPhotoInSDCard(bitmap,partFilename);
+            Toast.makeText(getApplicationContext(),"Image stored succesfully at "+partFilename,Toast.LENGTH_LONG).show();
         }
     };
+    private void storeCameraPhotoInSDCard(Bitmap bitmap, String currentDate){
 
-    private String saveToInternalSorage(Bitmap bitmapImage){
+        File outputFile = new File(Environment.getExternalStorageDirectory(), "photo_" + currentDate + ".jpg");
+        try {
+            FileOutputStream fileOutputStream = new FileOutputStream(outputFile);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
+            fileOutputStream.flush();
+            fileOutputStream.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /*private String saveToInternalSorage(Bitmap bitmapImage){
         ContextWrapper cw = new ContextWrapper(getApplicationContext());
         // path to /data/data/yourapp/app_data/imageDir
         File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
@@ -80,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
             e.printStackTrace();
         }
         return directory.getAbsolutePath();
-    }
+    }*/
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         mCamera=Camera.open();
