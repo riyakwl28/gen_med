@@ -1,10 +1,13 @@
 package com.example.gen_med;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -25,9 +28,11 @@ public class genericmedActivity extends AppCompatActivity {
     TextView textView;
     private ProgressDialog pDialog;
     private ListView lv;
+    TextView actual;
+    Button details;
 
     // URL to get contacts JSON
-    private static String url = "https://api.myjson.com/bins/11zizw";
+    private static String url = "https://api.myjson.com/bins/18hsn0";
 
     ArrayList<HashMap<String, String>> medicineList;
 
@@ -36,12 +41,33 @@ public class genericmedActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_genericmed);
         textView = (TextView) findViewById(R.id.tv);
-        String medName = getIntent().getStringExtra("Medicine Name");
+        final String medName = getIntent().getStringExtra("Medicine Name");
+        actual=(TextView)findViewById(R.id.actualPrc) ;
         textView.setText(medName);
         medicineList = new ArrayList<>();
+        details=(Button)findViewById(R.id.btndtls);
         lv = (ListView) findViewById(R.id.listView);
         new GetMedicine().execute();
+
+
+        details.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                //take picture here
+
+
+                Intent i=new Intent(genericmedActivity.this,detailsActivity.class);
+                i.putExtra("Medicine Name",medName);
+
+                startActivity(i);
+
+
+            }
+        });
     }
+
+
 
     private class GetMedicine extends AsyncTask<Void, Void, Void> {
         @Override
@@ -55,7 +81,7 @@ public class genericmedActivity extends AppCompatActivity {
         protected Void doInBackground(Void... arg0) {
             HttpHandler sh = new HttpHandler();
             // Making a request to url and getting response
-            String url = "https://api.myjson.com/bins/11zizw";
+            String url = "https://api.myjson.com/bins/18hsn0";
             String jsonStr = sh.makeServiceCall(url);
             String medName=getIntent().getStringExtra("Medicine Name");
 
@@ -72,6 +98,8 @@ public class genericmedActivity extends AppCompatActivity {
                                 "No Record Found" ,
                                 Toast.LENGTH_LONG).show();
                     }
+                   String actualp= medicine.getString("originalprice");
+                    actual.setText(actualp);
 
                    JSONArray alternatives= medicine.getJSONArray("alternatives");
                     JSONArray price= medicine.getJSONArray("price");

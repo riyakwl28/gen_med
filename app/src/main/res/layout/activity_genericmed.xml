@@ -6,7 +6,8 @@
     android:layout_height="match_parent"
     android:padding="20dp"
     android:orientation="vertical"
-    tools:context=".genericmedActivity">
+    tools:context=".genericmedActivity"
+    android:background="@drawable/bngsplash">
 
     <TextView
         android:id="@+id/tv"
@@ -14,6 +15,7 @@
         android:layout_height="0dp"
         android:layout_weight="0.2"
         android:text="Medicine Name"
+        android:gravity="center"
         android:textColor="#000"
         android:textSize="30sp"/>
 
@@ -23,6 +25,7 @@
         android:layout_height="0dp"
         android:layout_weight="0.2"
         android:text="Rs 0"
+        android:gravity="center"
         android:textColor="#000"
         android:textSize="30sp"/>
 
@@ -44,7 +47,7 @@
         android:layout_weight="0.5">
 
         <android.support.v7.widget.AppCompatButton
-            android:id="@+id/btncapture"
+            android:id="@+id/btndtls"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/surface_camera"
@@ -52,7 +55,7 @@
             android:background="#003366"
             android:elevation="10dp"
             android:padding="20dp"
-            android:text="Nearest Location"
+            android:text="Details"
             android:textColor="#FFF"
             android:textStyle="bold" />
 
