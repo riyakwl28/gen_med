@@ -53,20 +53,20 @@ public class detailsActivity extends AppCompatActivity {
         new GetDetails().execute();
 
 
-//        maps.setOnClickListener(new View.OnClickListener() {
-//
-//            @Override
-//            public void onClick(View v) {
-//                //take picture here
-//
-//
-//                Intent i=new Intent(genericmedActivity.this,detailsActivity.class);
-//
-//                startActivity(i);
-//
-//
-//            }
-//        });
+        maps.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                //take picture here
+
+
+                Intent i=new Intent(detailsActivity.this,mapActivity.class);
+
+                startActivity(i);
+
+
+            }
+        });
     }
 
 
